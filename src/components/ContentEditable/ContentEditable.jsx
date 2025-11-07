@@ -33,16 +33,6 @@ export class ContentEditable extends Component {
     this.msgRef = React.createRef();
   }
 
-  innerHTML = () => {
-    const {
-      props: { value },
-    } = this;
-
-    return {
-      __html: typeof value !== "undefined" ? value : "",
-    };
-  };
-
   handleKeyPress = (evt) => {
     const {
       props: { onKeyPress },
@@ -56,7 +46,7 @@ export class ContentEditable extends Component {
     } = this;
 
     const target = evt.target;
-    onChange?.(target.innerHTML, target.textContent, target.innerText);
+    onChange?.(target.value);
   };
 
   // Public API
@@ -82,7 +72,7 @@ export class ContentEditable extends Component {
       return true;
     }
 
-    if (nextProps.value !== msgRef.current.innerHTML) {
+    if (nextProps.value !== msgRef.current.value) {
       return true;
     }
 
@@ -100,8 +90,8 @@ export class ContentEditable extends Component {
       props: { value, activateAfterChange },
     } = this;
 
-    if (value !== msgRef.current.innerHTML) {
-      msgRef.current.innerHTML = typeof value === "string" ? value : "";
+    if (value !== msgRef.current.value) {
+      msgRef.current.value = typeof value === "string" ? value : "";
     }
 
     replaceCaret(msgRef.current, activateAfterChange);
@@ -112,22 +102,20 @@ export class ContentEditable extends Component {
         msgRef,
         handleInput,
         handleKeyPress,
-        innerHTML,
-        props: { placeholder, disabled, className },
+        props: { placeholder, disabled, className, value: _value, activateAfterChange: _activateAfterChange, autoFocus: _autoFocus, onChange: _onChange, onKeyPress: _onKeyPress, ...rest },
       } = this,
       ph = typeof placeholder === "string" ? placeholder : "";
 
     return (
-      <div
+      <input
         ref={msgRef}
         className={className}
-        contentEditable={disabled === false}
         disabled={disabled}
-        data-placeholder={ph}
+        placeholder={ph}
         onInput={handleInput}
         onKeyPress={handleKeyPress}
-        dangerouslySetInnerHTML={innerHTML()}
-      ></div>
+        {...rest}
+      />
     );
   }
 }

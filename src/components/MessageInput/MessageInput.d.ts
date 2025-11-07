@@ -18,6 +18,6 @@ export interface MessageInputProps {
   onAttachClick?: (evt: MouseEvent<HTMLButtonElement>) => void;
 }
 
-export declare const MessageInput: (props: ChatComponentPropsRef<MessageInputProps, "div">) => ReactElement;
+export declare const MessageInput: (props: ChatComponentPropsRef<MessageInputProps, "input">) => ReactElement;
 
 export default MessageInput;

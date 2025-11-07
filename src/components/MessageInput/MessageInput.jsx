@@ -123,11 +123,7 @@ function MessageInputInner(
   const getContent = () => {
     // Direct reference to contenteditable div
     const contentEditableRef = msgRef.current.msgRef.current;
-    return [
-      contentEditableRef.textContent,
-      contentEditableRef.innerText,
-      contentEditableRef.cloneNode(true).childNodes,
-    ];
+    return contentEditableRef.value;
   };
 
   const send = () => {
@@ -144,7 +140,7 @@ function MessageInputInner(
 
       const content = getContent();
 
-      onSend(stateValue, content[0], content[1], content[2]);
+      onSend(stateValue, content);
     }
   };
 
@@ -159,19 +155,17 @@ function MessageInputInner(
     }
   };
 
-  const handleChange = (innerHTML, textContent, innerText) => {
-    setStateValue(innerHTML);
+  const handleChange = (inputValue) => {
+    setStateValue(inputValue);
     if (typeof sendDisabled === "undefined") {
-      setStateSendDisabled(textContent.length === 0);
+      setStateSendDisabled(inputValue.length === 0);
     }
 
     if (typeof scrollRef.current.updateScroll === "function") {
       scrollRef.current.updateScroll();
     }
 
-    const content = getContent();
-
-    onChange(innerHTML, textContent, innerText, content[2]);
+    onChange(inputValue);
   };
 
   const cName = `${prefix}-message-input`,
@@ -179,7 +173,6 @@ function MessageInputInner(
 
   return (
     <div
-      {...rest}
       className={classNames(
         cName,
         { [`${cName}--disabled`]: disabled },
@@ -210,6 +203,7 @@ function MessageInputInner(
             onChange={handleChange}
             activateAfterChange={activateAfterChange}
             value={stateValue}
+            {...rest}
           />
         </EditorContainer>
       </div>
