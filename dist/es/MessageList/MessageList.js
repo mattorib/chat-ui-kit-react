@@ -1,4 +1,4 @@
-var _excluded = ["children", "typingIndicator", "loading", "loadingMore", "loadingMorePosition", "onYReachStart", "onYReachEnd", "className", "disableOnYReachWhenNoScroll", "scrollBehavior", "autoScrollToBottom", "autoScrollToBottomOnMount"];
+var _excluded = ["children", "typingIndicator", "loading", "loadingMore", "loadingMorePosition", "onYReachStart", "onYReachEnd", "className", "disableOnYReachWhenNoScroll", "fancyScroll", "scrollBehavior", "autoScrollToBottom", "autoScrollToBottomOnMount"];
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
@@ -236,6 +236,7 @@ var MessageListInner = /*#__PURE__*/function (_React$Component) {
         onYReachEnd = _this$props.onYReachEnd,
         className = _this$props.className,
         disableOnYReachWhenNoScroll = _this$props.disableOnYReachWhenNoScroll,
+        fancyScroll = _this$props.fancyScroll,
         scrollBehavior = _this$props.scrollBehavior,
         autoScrollToBottom = _this$props.autoScrollToBottom,
         autoScrollToBottomOnMount = _this$props.autoScrollToBottomOnMount,
@@ -244,11 +245,15 @@ var MessageListInner = /*#__PURE__*/function (_React$Component) {
       var _getChildren = getChildren(children, [MessageListContent]),
         _getChildren2 = _slicedToArray(_getChildren, 1),
         customContent = _getChildren2[0];
+      var content = /*#__PURE__*/React.createElement(React.Fragment, null, customContent ? customContent : children, /*#__PURE__*/React.createElement("div", {
+        className: "".concat(cName, "__scroll-to"),
+        ref: this.scrollPointRef
+      }));
       return /*#__PURE__*/React.createElement("div", _extends({}, rest, {
         className: classNames(cName, className)
       }), loadingMore && /*#__PURE__*/React.createElement("div", {
         className: classNames("".concat(cName, "__loading-more"), _defineProperty({}, "".concat(cName, "__loading-more--bottom"), loadingMorePosition === "bottom"))
-      }, /*#__PURE__*/React.createElement(Loader, null)), loading && /*#__PURE__*/React.createElement(Overlay, null, /*#__PURE__*/React.createElement(Loader, null)), /*#__PURE__*/React.createElement(PerfectScrollbar, _extends({
+      }, /*#__PURE__*/React.createElement(Loader, null)), loading && /*#__PURE__*/React.createElement(Overlay, null, /*#__PURE__*/React.createElement(Loader, null)), fancyScroll === true ? /*#__PURE__*/React.createElement(PerfectScrollbar, _extends({
         onYReachStart: onYReachStart,
         onYReachEnd: onYReachEnd,
         onSync: function onSync(ps) {
@@ -268,10 +273,7 @@ var MessageListInner = /*#__PURE__*/function (_React$Component) {
           overflowAnchor: "auto",
           touchAction: "none"
         }
-      }), customContent ? customContent : children, /*#__PURE__*/React.createElement("div", {
-        className: "".concat(cName, "__scroll-to"),
-        ref: this.scrollPointRef
-      })), typeof typingIndicator !== "undefined" && /*#__PURE__*/React.createElement("div", {
+      }), content) : content, typeof typingIndicator !== "undefined" && /*#__PURE__*/React.createElement("div", {
         className: "".concat(cName, "__typing-indicator-container")
       }, typingIndicator));
     }
@@ -344,7 +346,12 @@ MessageList.propTypes = {
    */
   scrollBehavior: PropTypes.oneOf(["auto", "smooth"]),
   /** Additional classes. */
-  className: PropTypes.string
+  className: PropTypes.string,
+  /**
+   * Fancy scroll
+   * This property is set in constructor, and is not changing when component update.
+   */
+  fancyScroll: PropTypes.bool
 };
 MessageList.defaultProps = {
   typingIndicator: undefined,
@@ -354,7 +361,8 @@ MessageList.defaultProps = {
   disableOnYReachWhenNoScroll: false,
   autoScrollToBottom: true,
   autoScrollToBottomOnMount: true,
-  scrollBehavior: "auto"
+  scrollBehavior: "auto",
+  fancyScroll: true
 };
 process.env.NODE_ENV !== "production" ? MessageListInner.propTypes = MessageList.propTypes : void 0;
 MessageListInner.defaultProps = MessageList.defaultProps;

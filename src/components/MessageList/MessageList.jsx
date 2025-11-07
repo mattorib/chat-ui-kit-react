@@ -177,7 +177,7 @@ class MessageListInner extends React.Component {
             if (
               typeof lastMessageInGroup === "undefined" ||
               lastMessageInGroup ===
-                snapshot.lastMessageOrGroup.lastMessageInGroup
+              snapshot.lastMessageOrGroup.lastMessageInGroup
             ) {
               // New elements were not added at end
               // New elements were added at start
@@ -255,6 +255,7 @@ class MessageListInner extends React.Component {
         onYReachEnd,
         className,
         disableOnYReachWhenNoScroll,
+        fancyScroll,
         scrollBehavior, // Just to remove rest
         autoScrollToBottom, // Just to remove rest
         autoScrollToBottomOnMount, // Just to remove rest
@@ -265,6 +266,16 @@ class MessageListInner extends React.Component {
     const cName = `${prefix}-message-list`;
 
     const [customContent] = getChildren(children, [MessageListContent]);
+
+    const content = (
+      <>
+        {customContent ? customContent : children}
+        <div
+          className={`${cName}__scroll-to`}
+          ref={this.scrollPointRef}
+        ></div>
+      </>
+    )
 
     return (
       <div {...rest} className={classNames(cName, className)}>
@@ -283,27 +294,25 @@ class MessageListInner extends React.Component {
             <Loader />
           </Overlay>
         )}
-        <PerfectScrollbar
-          onYReachStart={onYReachStart}
-          onYReachEnd={onYReachEnd}
-          onSync={(ps) => ps.update(disableOnYReachWhenNoScroll)}
-          className={`${cName}__scroll-wrapper`}
-          ref={this.scrollRef}
-          containerRef={(ref) => (this.containerRef.current = ref)}
-          options={{ suppressScrollX: true }}
-          {...{ [`data-${prefix}-message-list`]: "" }}
-          style={{
-            overscrollBehaviorY: "none",
-            overflowAnchor: "auto",
-            touchAction: "none",
-          }}
-        >
-          {customContent ? customContent : children}
-          <div
-            className={`${cName}__scroll-to`}
-            ref={this.scrollPointRef}
-          ></div>
-        </PerfectScrollbar>
+        {fancyScroll === true ? (
+          <PerfectScrollbar
+            onYReachStart={onYReachStart}
+            onYReachEnd={onYReachEnd}
+            onSync={(ps) => ps.update(disableOnYReachWhenNoScroll)}
+            className={`${cName}__scroll-wrapper`}
+            ref={this.scrollRef}
+            containerRef={(ref) => (this.containerRef.current = ref)}
+            options={{ suppressScrollX: true }}
+            {...{ [`data-${prefix}-message-list`]: "" }}
+            style={{
+              overscrollBehaviorY: "none",
+              overflowAnchor: "auto",
+              touchAction: "none",
+            }}
+          >
+            {content}
+          </PerfectScrollbar>
+        ) : content}
         {typeof typingIndicator !== "undefined" && (
           <div className={`${cName}__typing-indicator-container`}>
             {typingIndicator}
@@ -398,6 +407,12 @@ MessageList.propTypes = {
 
   /** Additional classes. */
   className: PropTypes.string,
+
+  /**
+   * Fancy scroll
+   * This property is set in constructor, and is not changing when component update.
+   */
+  fancyScroll: PropTypes.bool,
 };
 
 MessageList.defaultProps = {
@@ -409,6 +424,7 @@ MessageList.defaultProps = {
   autoScrollToBottom: true,
   autoScrollToBottomOnMount: true,
   scrollBehavior: "auto",
+  fancyScroll: true,
 };
 
 MessageListInner.propTypes = MessageList.propTypes;

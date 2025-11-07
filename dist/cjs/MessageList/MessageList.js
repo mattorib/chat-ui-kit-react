@@ -16,7 +16,7 @@ var _Message = _interopRequireDefault(require("../Message"));
 var _MessageGroup = _interopRequireDefault(require("../MessageGroup"));
 var _MessageSeparator = _interopRequireDefault(require("../MessageSeparator"));
 var _MessageListContent = _interopRequireDefault(require("./MessageListContent"));
-var _excluded = ["children", "typingIndicator", "loading", "loadingMore", "loadingMorePosition", "onYReachStart", "onYReachEnd", "className", "disableOnYReachWhenNoScroll", "scrollBehavior", "autoScrollToBottom", "autoScrollToBottomOnMount"];
+var _excluded = ["children", "typingIndicator", "loading", "loadingMore", "loadingMorePosition", "onYReachStart", "onYReachEnd", "className", "disableOnYReachWhenNoScroll", "fancyScroll", "scrollBehavior", "autoScrollToBottom", "autoScrollToBottomOnMount"];
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function _interopRequireWildcard(e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, "default": e }; if (null === e || "object" != _typeof(e) && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (var _t in e) "default" !== _t && {}.hasOwnProperty.call(e, _t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, _t)) && (i.get || i.set) ? o(f, _t, i) : f[_t] = e[_t]); return f; })(e, t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
@@ -244,6 +244,7 @@ var MessageListInner = /*#__PURE__*/function (_React$Component) {
         onYReachEnd = _this$props.onYReachEnd,
         className = _this$props.className,
         disableOnYReachWhenNoScroll = _this$props.disableOnYReachWhenNoScroll,
+        fancyScroll = _this$props.fancyScroll,
         scrollBehavior = _this$props.scrollBehavior,
         autoScrollToBottom = _this$props.autoScrollToBottom,
         autoScrollToBottomOnMount = _this$props.autoScrollToBottomOnMount,
@@ -252,11 +253,15 @@ var MessageListInner = /*#__PURE__*/function (_React$Component) {
       var _getChildren = (0, _utils.getChildren)(children, [_MessageListContent["default"]]),
         _getChildren2 = _slicedToArray(_getChildren, 1),
         customContent = _getChildren2[0];
+      var content = /*#__PURE__*/_react["default"].createElement(_react["default"].Fragment, null, customContent ? customContent : children, /*#__PURE__*/_react["default"].createElement("div", {
+        className: "".concat(cName, "__scroll-to"),
+        ref: this.scrollPointRef
+      }));
       return /*#__PURE__*/_react["default"].createElement("div", _extends({}, rest, {
         className: (0, _classnames["default"])(cName, className)
       }), loadingMore && /*#__PURE__*/_react["default"].createElement("div", {
         className: (0, _classnames["default"])("".concat(cName, "__loading-more"), _defineProperty({}, "".concat(cName, "__loading-more--bottom"), loadingMorePosition === "bottom"))
-      }, /*#__PURE__*/_react["default"].createElement(_Loader["default"], null)), loading && /*#__PURE__*/_react["default"].createElement(_Overlay["default"], null, /*#__PURE__*/_react["default"].createElement(_Loader["default"], null)), /*#__PURE__*/_react["default"].createElement(_Scroll["default"], _extends({
+      }, /*#__PURE__*/_react["default"].createElement(_Loader["default"], null)), loading && /*#__PURE__*/_react["default"].createElement(_Overlay["default"], null, /*#__PURE__*/_react["default"].createElement(_Loader["default"], null)), fancyScroll === true ? /*#__PURE__*/_react["default"].createElement(_Scroll["default"], _extends({
         onYReachStart: onYReachStart,
         onYReachEnd: onYReachEnd,
         onSync: function onSync(ps) {
@@ -276,10 +281,7 @@ var MessageListInner = /*#__PURE__*/function (_React$Component) {
           overflowAnchor: "auto",
           touchAction: "none"
         }
-      }), customContent ? customContent : children, /*#__PURE__*/_react["default"].createElement("div", {
-        className: "".concat(cName, "__scroll-to"),
-        ref: this.scrollPointRef
-      })), typeof typingIndicator !== "undefined" && /*#__PURE__*/_react["default"].createElement("div", {
+      }), content) : content, typeof typingIndicator !== "undefined" && /*#__PURE__*/_react["default"].createElement("div", {
         className: "".concat(cName, "__typing-indicator-container")
       }, typingIndicator));
     }
@@ -352,7 +354,12 @@ MessageList.propTypes = {
    */
   scrollBehavior: _propTypes["default"].oneOf(["auto", "smooth"]),
   /** Additional classes. */
-  className: _propTypes["default"].string
+  className: _propTypes["default"].string,
+  /**
+   * Fancy scroll
+   * This property is set in constructor, and is not changing when component update.
+   */
+  fancyScroll: _propTypes["default"].bool
 };
 MessageList.defaultProps = {
   typingIndicator: undefined,
@@ -362,7 +369,8 @@ MessageList.defaultProps = {
   disableOnYReachWhenNoScroll: false,
   autoScrollToBottom: true,
   autoScrollToBottomOnMount: true,
-  scrollBehavior: "auto"
+  scrollBehavior: "auto",
+  fancyScroll: true
 };
 process.env.NODE_ENV !== "production" ? MessageListInner.propTypes = MessageList.propTypes : void 0;
 MessageListInner.defaultProps = MessageList.defaultProps;

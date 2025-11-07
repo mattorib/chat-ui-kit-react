@@ -16,6 +16,7 @@ export interface MessageListOwnProps {
   autoScrollToBottom?:boolean;
   autoScrollToBottomOnMount?:boolean;
   scrollBehavior?: "auto" | "smooth";
+  fancyScroll?:boolean;
 }
 
 export type MessageListProps = ChatComponentPropsChildrenRef<MessageListOwnProps, "div">
