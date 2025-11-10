@@ -28,6 +28,7 @@ class MessageListInner extends React.Component {
 
   getSnapshotBeforeUpdate() {
     const list = this.containerRef.current;
+    if (list === null) return null;
 
     const topHeight = Math.round(list.scrollTop + list.clientHeight);
     // 1 px fix for firefox
@@ -47,11 +48,14 @@ class MessageListInner extends React.Component {
 
   handleResize = () => {
     // If container is smaller than before resize - scroll to End
-    if (this.containerRef.current.clientHeight < this.lastClientHeight) {
+    if (
+      this.containerRef.current &&
+      this.containerRef.current.clientHeight < this.lastClientHeight
+    ) {
       this.scrollToEnd(this.props.scrollBehavior);
     }
 
-    this.scrollRef.current.updateScroll();
+    this.scrollRef.current?.updateScroll();
   };
 
   handleContainerResize = () => {
@@ -76,7 +80,7 @@ class MessageListInner extends React.Component {
 
           this.lastClientHeight = list.clientHeight;
 
-          this.scrollRef.current.updateScroll();
+          this.scrollRef.current?.updateScroll();
         }
 
         this.resizeTicking = false;
@@ -109,6 +113,7 @@ class MessageListInner extends React.Component {
   };
 
   componentDidMount() {
+    if (!this.containerRef.current || this.scrollRef.current) return;
     // Set scrollbar to bottom on start (getSnaphotBeforeUpdate is not invoked on mount)
     if (this.props.autoScrollToBottomOnMount === true) {
       this.scrollToEnd(this.props.scrollBehavior);
@@ -130,7 +135,7 @@ class MessageListInner extends React.Component {
       props: { autoScrollToBottom },
     } = this;
 
-    if (typeof snapshot !== "undefined") {
+    if (typeof snapshot !== "undefined" && snapshot !== null) {
       const list = this.containerRef.current;
 
       const { lastElement, lastMessageInGroup } = this.getLastMessageOrGroup();
@@ -177,7 +182,7 @@ class MessageListInner extends React.Component {
             if (
               typeof lastMessageInGroup === "undefined" ||
               lastMessageInGroup ===
-              snapshot.lastMessageOrGroup.lastMessageInGroup
+                snapshot.lastMessageOrGroup.lastMessageInGroup
             ) {
               // New elements were not added at end
               // New elements were added at start
@@ -201,7 +206,7 @@ class MessageListInner extends React.Component {
     if (typeof this.resizeObserver !== "undefined") {
       this.resizeObserver.disconnect();
     }
-    this.containerRef.current.removeEventListener("scroll", this.handleScroll);
+    this.containerRef.current?.removeEventListener("scroll", this.handleScroll);
   }
 
   scrollToEnd(scrollBehavior = this.props.scrollBehavior) {
@@ -270,12 +275,9 @@ class MessageListInner extends React.Component {
     const content = (
       <>
         {customContent ? customContent : children}
-        <div
-          className={`${cName}__scroll-to`}
-          ref={this.scrollPointRef}
-        ></div>
+        <div className={`${cName}__scroll-to`} ref={this.scrollPointRef}></div>
       </>
-    )
+    );
 
     return (
       <div {...rest} className={classNames(cName, className)}>
@@ -312,7 +314,18 @@ class MessageListInner extends React.Component {
           >
             {content}
           </PerfectScrollbar>
-        ) : content}
+        ) : (
+          <div
+            className="scrollbar-container cs-message-list__scroll-wrapper"
+            style={{
+              overscrollBehaviorY: "none",
+              overflowAnchor: "auto",
+              touchAction: "none",
+            }}
+          >
+            {content}
+          </div>
+        )}
         {typeof typingIndicator !== "undefined" && (
           <div className={`${cName}__typing-indicator-container`}>
             {typingIndicator}

@@ -48,17 +48,19 @@ var MessageListInner = /*#__PURE__*/function (_React$Component) {
     _classCallCheck(this, MessageListInner);
     _this = _callSuper(this, MessageListInner, [props]);
     _defineProperty(_this, "handleResize", function () {
+      var _this$scrollRef$curre;
       // If container is smaller than before resize - scroll to End
-      if (_this.containerRef.current.clientHeight < _this.lastClientHeight) {
+      if (_this.containerRef.current && _this.containerRef.current.clientHeight < _this.lastClientHeight) {
         _this.scrollToEnd(_this.props.scrollBehavior);
       }
-      _this.scrollRef.current.updateScroll();
+      (_this$scrollRef$curre = _this.scrollRef.current) === null || _this$scrollRef$curre === void 0 ? void 0 : _this$scrollRef$curre.updateScroll();
     });
     _defineProperty(_this, "handleContainerResize", function () {
       if (_this.resizeTicking === false) {
         window.requestAnimationFrame(function () {
           var list = _this.containerRef.current;
           if (list) {
+            var _this$scrollRef$curre2;
             var currentHeight = list.clientHeight;
             var diff = currentHeight - _this.lastClientHeight;
             if (diff >= 1) {
@@ -71,7 +73,7 @@ var MessageListInner = /*#__PURE__*/function (_React$Component) {
               list.scrollTop = list.scrollTop - diff;
             }
             _this.lastClientHeight = list.clientHeight;
-            _this.scrollRef.current.updateScroll();
+            (_this$scrollRef$curre2 = _this.scrollRef.current) === null || _this$scrollRef$curre2 === void 0 ? void 0 : _this$scrollRef$curre2.updateScroll();
           }
           _this.resizeTicking = false;
         });
@@ -119,6 +121,7 @@ var MessageListInner = /*#__PURE__*/function (_React$Component) {
     key: "getSnapshotBeforeUpdate",
     value: function getSnapshotBeforeUpdate() {
       var list = this.containerRef.current;
+      if (list === null) return null;
       var topHeight = Math.round(list.scrollTop + list.clientHeight);
       // 1 px fix for firefox
       var sticky = list.scrollHeight === topHeight || list.scrollHeight + 1 === topHeight || list.scrollHeight - 1 === topHeight;
@@ -133,6 +136,7 @@ var MessageListInner = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "componentDidMount",
     value: function componentDidMount() {
+      if (!this.containerRef.current || this.scrollRef.current) return;
       // Set scrollbar to bottom on start (getSnaphotBeforeUpdate is not invoked on mount)
       if (this.props.autoScrollToBottomOnMount === true) {
         this.scrollToEnd(this.props.scrollBehavior);
@@ -149,7 +153,7 @@ var MessageListInner = /*#__PURE__*/function (_React$Component) {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps, prevState, snapshot) {
       var autoScrollToBottom = this.props.autoScrollToBottom;
-      if (typeof snapshot !== "undefined") {
+      if (typeof snapshot !== "undefined" && snapshot !== null) {
         var list = this.containerRef.current;
         var _this$getLastMessageO = this.getLastMessageOrGroup(),
           lastElement = _this$getLastMessageO.lastElement,
@@ -197,11 +201,12 @@ var MessageListInner = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "componentWillUnmount",
     value: function componentWillUnmount() {
+      var _this$containerRef$cu;
       window.removeEventListener("resize", this.handleResize);
       if (typeof this.resizeObserver !== "undefined") {
         this.resizeObserver.disconnect();
       }
-      this.containerRef.current.removeEventListener("scroll", this.handleScroll);
+      (_this$containerRef$cu = this.containerRef.current) === null || _this$containerRef$cu === void 0 ? void 0 : _this$containerRef$cu.removeEventListener("scroll", this.handleScroll);
     }
   }, {
     key: "scrollToEnd",
@@ -281,7 +286,14 @@ var MessageListInner = /*#__PURE__*/function (_React$Component) {
           overflowAnchor: "auto",
           touchAction: "none"
         }
-      }), content) : content, typeof typingIndicator !== "undefined" && /*#__PURE__*/_react["default"].createElement("div", {
+      }), content) : /*#__PURE__*/_react["default"].createElement("div", {
+        className: "scrollbar-container cs-message-list__scroll-wrapper",
+        style: {
+          overscrollBehaviorY: "none",
+          overflowAnchor: "auto",
+          touchAction: "none"
+        }
+      }, content), typeof typingIndicator !== "undefined" && /*#__PURE__*/_react["default"].createElement("div", {
         className: "".concat(cName, "__typing-indicator-container")
       }, typingIndicator));
     }
